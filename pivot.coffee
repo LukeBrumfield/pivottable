@@ -419,7 +419,6 @@ callWithJQuery ($) ->
                 th.setAttribute("rowspan",colAttrs.length)
                 th.className = "pvtAxisLabel"
                 th.textContent = r
-                console.log r
                 tr.appendChild th
         else
           th = document.createElement("th")
@@ -486,11 +485,11 @@ callWithJQuery ($) ->
             for own j, txt of rowKey
                 x = spanSize(rowKeys, parseInt(i), parseInt(j))
                 if x != -1
-                    th = document.createElement("th")
-                    th.className = "pvtRowLabel"
-                    th.textContent = txt
-                    th.setAttribute("rowspan", x)
-                    tr.appendChild th
+                    td = document.createElement("td")
+                    td.className = "pvtRowLabel"
+                    td.textContent = txt
+                    td.setAttribute("rowspan", x)
+                    tr.appendChild td
             for own j, colKey of colKeys #this is the tight loop
                 aggregator = pivotData.getAggregator(rowKey, colKey)
                 val = aggregator.value()
@@ -512,11 +511,11 @@ callWithJQuery ($) ->
 
         #finally, the row for col totals, and a grand total
         tr = document.createElement("tr")
-        th = document.createElement("th")
-        th.className = "pvtTotalLabel"
-        th.innerHTML = opts.localeStrings.totals
-        th.setAttribute("colspan", rowAttrs.length)
-        tr.appendChild th
+        td = document.createElement("td")
+        td.className = "pvtTotalLabel"
+        td.innerHTML = opts.localeStrings.totals
+        td.setAttribute("colspan", rowAttrs.length)
+        tr.appendChild td
         for own j, colKey of colKeys
             totalAggregator = pivotData.getAggregator([], colKey)
             val = totalAggregator.value()
@@ -728,7 +727,8 @@ callWithJQuery ($) ->
                         .bind "click", showFilterList
 
                     attrElem = $("<li>").addClass("axis_#{i}")
-                        .append $("<span>").addClass('pvtAttr').text(c).data("attrName", c).append(triangleLink)
+                        .append $("<span>").addClass('pvtAttr').text(c).data("attrName", c)
+                        .append(triangleLink)
                     attrElem.addClass('pvtFilteredAttribute') if hasExcludedItem
                     colList.append(attrElem).append(valueList)
 
