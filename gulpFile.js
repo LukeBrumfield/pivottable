@@ -17,21 +17,21 @@ gulp.task('makeCss', function() {
     gulp.src('./dist/pivot.css')
         .pipe(minifyCSS())
         .pipe(concat('pivot.min.css'))//trick to output to new file
-        .pipe(gulp.dest('./dist/'))
+        .pipe(gulp.dest('./dist/'));
 });
 
 
 gulp.task('makeJs', function() {
-    
+
     gulp.src('./*.coffee')
         //compile to js (and create map files)
         .pipe(sourcemaps.init())
         .pipe(coffee()).on('error', gutil.log)
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./dist'))
-        
+
         //minify js files as well
-        .pipe(filter('*.js'))//filter, to avoid doing this processing on the map files generated above 
+        .pipe(filter('*.js'))//filter, to avoid doing this processing on the map files generated above
          .pipe(rename({
             suffix: '.min'
         }))
@@ -45,7 +45,7 @@ gulp.task('makeJs', function() {
 
 function inc(importance) {
     // get all the files to bump version in
-    return gulp.src(['./package.json', './bower.json', './pivottable.jquery.json']) 
+    return gulp.src(['./package.json', './bower.json', './pivottable.jquery.json'])
         // bump the version number in those files
         .pipe(bump({type: importance}))
         // save it back to filesystem
@@ -67,14 +67,14 @@ gulp.task('tag', function() {
     return gulp.src(['./package.json', './bower.json', './pivottable.jquery.json'])
     .pipe(git.commit('version bump'))
     // read only one file to get the version number
-    .pipe(filter('package.json')) 
+    .pipe(filter('package.json'))
     .pipe(tag_version());
 });
 
 
-gulp.task('bumpPatch', function() { return inc('patch'); })
-gulp.task('bumpMinor', function() { return inc('minor'); })
-gulp.task('bumpMajor', function() { return inc('major'); })
+gulp.task('bumpPatch', function() { return inc('patch'); });
+gulp.task('bumpMinor', function() { return inc('minor'); });
+gulp.task('bumpMajor', function() { return inc('major'); });
 
 gulp.task('patch', function() {
     runSequence('bumpPatch', 'default', 'tag', 'publish', 'push');
@@ -92,4 +92,3 @@ gulp.task('watch', function() {
 });
 
 gulp.task('default', ['makeJs', 'makeCss']);
-

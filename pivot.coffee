@@ -27,7 +27,7 @@ callWithJQuery ($) ->
             digitsAfterDecimal: 2, scaler: 1,
             thousandsSep: ",", decimalSep: "."
             prefix: "", suffix: ""
-            showZero: false
+            showZero: true
         opts = $.extend defaults, opts
         (x) ->
             return "" if isNaN(x) or not isFinite(x)
@@ -377,8 +377,11 @@ callWithJQuery ($) ->
     pivotTableRenderer = (pivotData, opts) ->
 
         defaults =
+            showRowTotals : true
+            showColTotals : true
             localeStrings:
                 totals: "Totals"
+
 
         opts = $.extend defaults, opts
 
@@ -413,6 +416,7 @@ callWithJQuery ($) ->
         #the first row is for the row attribute labels
         #first level col headers and total
         tr = document.createElement("tr")
+        tr.className = "pvtLabelRow"
         if rowAttrs.length !=0
             for own i, r of rowAttrs
                 th = document.createElement("th")
@@ -435,16 +439,20 @@ callWithJQuery ($) ->
                     th.textContent = colKey[j]
                     th.setAttribute("colspan", x)
                     tr.appendChild th
-        th = document.createElement("th")
-        th.setAttribute("rowspan",colAttrs.length)
-        th.className = "pvtTotalLabel"
-        th.innerHTML = opts.localeStrings.totals
-        tr.appendChild th
+
+        if opts.showRowTotals == true
+            th = document.createElement("th")
+            th.setAttribute("rowspan",colAttrs.length)
+            th.className = "pvtTotalLabel"
+            th.innerHTML = opts.localeStrings.totals
+            tr.appendChild th
+
         thead.appendChild tr
 
         for own j, c of colAttrs
             if parseInt(j) != 0
               tr = document.createElement("tr")
+              tr.className = "pvtLabelRow"
               for own i, colKey of colKeys
                 x = spanSize(colKeys, parseInt(i), parseInt(j))
                 if x != -1
@@ -457,6 +465,7 @@ callWithJQuery ($) ->
 
         for own j, c of colAttrs
             tr = document.createElement("tr")
+            tr.className = "pvtLabelRow"
             if parseInt(j) == 0 and rowAttrs.length != 0
                 th = document.createElement("th")
                 tr.appendChild th
@@ -482,6 +491,7 @@ callWithJQuery ($) ->
         #now the actual data rows, with their row headers and totals
         for own i, rowKey of rowKeys
             tr = document.createElement("tr")
+            tr.className = "pvtDataRow"
             for own j, txt of rowKey
                 x = spanSize(rowKeys, parseInt(i), parseInt(j))
                 if x != -1
@@ -511,6 +521,7 @@ callWithJQuery ($) ->
 
         #finally, the row for col totals, and a grand total
         tr = document.createElement("tr")
+        tr.className = "pvtTotalRow"
         td = document.createElement("td")
         td.className = "pvtTotalLabel"
         td.innerHTML = opts.localeStrings.totals

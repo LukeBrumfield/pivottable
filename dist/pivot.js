@@ -42,7 +42,7 @@
         decimalSep: ".",
         prefix: "",
         suffix: "",
-        showZero: false
+        showZero: true
       };
       opts = $.extend(defaults, opts);
       return function(x) {
@@ -739,6 +739,8 @@
     pivotTableRenderer = function(pivotData, opts) {
       var aggregator, c, colAttrs, colKey, colKeys, defaults, i, j, r, result, rowAttrs, rowKey, rowKeys, spanSize, tbody, td, th, thead, totalAggregator, tr, txt, val, x;
       defaults = {
+        showRowTotals: true,
+        showColTotals: true,
         localeStrings: {
           totals: "Totals"
         }
@@ -780,6 +782,7 @@
       };
       thead = document.createElement("thead");
       tr = document.createElement("tr");
+      tr.className = "pvtLabelRow";
       if (rowAttrs.length !== 0) {
         for (i in rowAttrs) {
           if (!hasProp.call(rowAttrs, i)) continue;
@@ -788,7 +791,6 @@
           th.setAttribute("rowspan", colAttrs.length);
           th.className = "pvtAxisLabel";
           th.textContent = r;
-          console.log(r);
           tr.appendChild(th);
         }
       } else {
@@ -814,17 +816,20 @@
           }
         }
       }
-      th = document.createElement("th");
-      th.setAttribute("rowspan", colAttrs.length);
-      th.className = "pvtTotalLabel";
-      th.innerHTML = opts.localeStrings.totals;
-      tr.appendChild(th);
+      if (opts.showRowTotals === true) {
+        th = document.createElement("th");
+        th.setAttribute("rowspan", colAttrs.length);
+        th.className = "pvtTotalLabel";
+        th.innerHTML = opts.localeStrings.totals;
+        tr.appendChild(th);
+      }
       thead.appendChild(tr);
       for (j in colAttrs) {
         if (!hasProp.call(colAttrs, j)) continue;
         c = colAttrs[j];
         if (parseInt(j) !== 0) {
           tr = document.createElement("tr");
+          tr.className = "pvtLabelRow";
           for (i in colKeys) {
             if (!hasProp.call(colKeys, i)) continue;
             colKey = colKeys[i];
@@ -844,6 +849,7 @@
         if (!hasProp.call(colAttrs, j)) continue;
         c = colAttrs[j];
         tr = document.createElement("tr");
+        tr.className = "pvtLabelRow";
         if (parseInt(j) === 0 && rowAttrs.length !== 0) {
           th = document.createElement("th");
           tr.appendChild(th);
@@ -874,16 +880,17 @@
         if (!hasProp.call(rowKeys, i)) continue;
         rowKey = rowKeys[i];
         tr = document.createElement("tr");
+        tr.className = "pvtDataRow";
         for (j in rowKey) {
           if (!hasProp.call(rowKey, j)) continue;
           txt = rowKey[j];
           x = spanSize(rowKeys, parseInt(i), parseInt(j));
           if (x !== -1) {
-            th = document.createElement("th");
-            th.className = "pvtRowLabel";
-            th.textContent = txt;
-            th.setAttribute("rowspan", x);
-            tr.appendChild(th);
+            td = document.createElement("td");
+            td.className = "pvtRowLabel";
+            td.textContent = txt;
+            td.setAttribute("rowspan", x);
+            tr.appendChild(td);
           }
         }
         for (j in colKeys) {
@@ -908,11 +915,12 @@
         tbody.appendChild(tr);
       }
       tr = document.createElement("tr");
-      th = document.createElement("th");
-      th.className = "pvtTotalLabel";
-      th.innerHTML = opts.localeStrings.totals;
-      th.setAttribute("colspan", rowAttrs.length);
-      tr.appendChild(th);
+      tr.className = "pvtTotalRow";
+      td = document.createElement("td");
+      td.className = "pvtTotalLabel";
+      td.innerHTML = opts.localeStrings.totals;
+      td.setAttribute("colspan", rowAttrs.length);
+      tr.appendChild(td);
       for (j in colKeys) {
         if (!hasProp.call(colKeys, j)) continue;
         colKey = colKeys[j];
@@ -1207,7 +1215,7 @@
             return valueList.find('.pvtCheckContainer p').show();
           };
           triangleLink = $("<span>").addClass('pvtTriangle').html(" &#x25BE;").bind("click", showFilterList);
-          attrElem = $("<li>").addClass("axis_" + i).append($("<span>").addClass('pvtAttr').text(c).data("attrName", c).append(triangleLink));
+          attrElem = $("<li>").addClass("axis_" + i).append($("<span>").addClass('pvtAttr').text(c).data("attrName", c)).append(triangleLink);
           if (hasExcludedItem) {
             attrElem.addClass('pvtFilteredAttribute');
           }
