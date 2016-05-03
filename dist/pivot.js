@@ -586,7 +586,7 @@
           }
         } else if (input instanceof jQuery) {
           tblCols = [];
-          $("thead > tr > th", input).each(function(i) {
+          $("tbody > tr.pvtLabelRow > td", input).each(function(i) {
             return tblCols.push($(this).text());
           });
           return $("tbody > tr", input).each(function(i) {
@@ -737,7 +737,7 @@
     Default Renderer for hierarchical table layout
      */
     pivotTableRenderer = function(pivotData, opts) {
-      var aggregator, c, colAttrs, colKey, colKeys, defaults, i, j, r, result, rowAttrs, rowKey, rowKeys, spanSize, tbody, td, th, thead, totalAggregator, tr, txt, val, x;
+      var aggregator, c, colAttrs, colKey, colKeys, defaults, i, j, len, r, result, rowAttrs, rowKey, rowKeys, spanSize, tbody, td, totalAggregator, tr, txt, val, x;
       defaults = {
         showRowTotals: true,
         showColTotals: true,
@@ -780,23 +780,27 @@
         }
         return len;
       };
-      thead = document.createElement("thead");
+      tbody = document.createElement("tbody");
       tr = document.createElement("tr");
       tr.className = "pvtLabelRow";
+      len = colAttrs.length;
+      if (len === 0) {
+        len = 1;
+      }
       if (rowAttrs.length !== 0) {
         for (i in rowAttrs) {
           if (!hasProp.call(rowAttrs, i)) continue;
           r = rowAttrs[i];
-          th = document.createElement("th");
-          th.setAttribute("rowspan", colAttrs.length);
-          th.className = "pvtAxisLabel";
-          th.textContent = r;
-          tr.appendChild(th);
+          td = document.createElement("td");
+          td.setAttribute("rowspan", len);
+          td.className = "pvtAxisLabel";
+          td.textContent = r;
+          tr.appendChild(td);
         }
       } else {
-        th = document.createElement("th");
-        th.setAttribute("rowspan", colAttrs.length);
-        tr.appendChild(th);
+        td = document.createElement("td");
+        td.setAttribute("rowspan", len);
+        tr.appendChild(td);
       }
       for (j in colAttrs) {
         if (!hasProp.call(colAttrs, j)) continue;
@@ -807,23 +811,27 @@
             colKey = colKeys[i];
             x = spanSize(colKeys, parseInt(i), parseInt(j));
             if (x !== -1) {
-              th = document.createElement("th");
-              th.className = "pvtColLabel";
-              th.textContent = colKey[j];
-              th.setAttribute("colspan", x);
-              tr.appendChild(th);
+              td = document.createElement("td");
+              td.className = "pvtColLabel";
+              td.textContent = colKey[j];
+              td.setAttribute("colspan", x);
+              tr.appendChild(td);
             }
           }
         }
       }
-      if (opts.showRowTotals === true) {
-        th = document.createElement("th");
-        th.setAttribute("rowspan", colAttrs.length);
-        th.className = "pvtTotalLabel";
-        th.innerHTML = opts.localeStrings.totals;
-        tr.appendChild(th);
+      len = colAttrs.length;
+      if (len === 0) {
+        len = 1;
       }
-      thead.appendChild(tr);
+      if (opts.showRowTotals === true) {
+        td = document.createElement("td");
+        td.setAttribute("rowspan", len);
+        td.className = "pvtTotalLabel";
+        td.innerHTML = opts.localeStrings.totals;
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
       for (j in colAttrs) {
         if (!hasProp.call(colAttrs, j)) continue;
         c = colAttrs[j];
@@ -835,14 +843,14 @@
             colKey = colKeys[i];
             x = spanSize(colKeys, parseInt(i), parseInt(j));
             if (x !== -1) {
-              th = document.createElement("th");
-              th.className = "pvtColLabel";
-              th.textContent = colKey[j];
-              th.setAttribute("colspan", x);
-              tr.appendChild(th);
+              td = document.createElement("td");
+              td.className = "pvtColLabel";
+              td.textContent = colKey[j];
+              td.setAttribute("colspan", x);
+              tr.appendChild(td);
             }
           }
-          thead.appendChild(tr);
+          tbody.appendChild(tr);
         }
       }
       for (j in colAttrs) {
@@ -851,31 +859,29 @@
         tr = document.createElement("tr");
         tr.className = "pvtLabelRow";
         if (parseInt(j) === 0 && rowAttrs.length !== 0) {
-          th = document.createElement("th");
-          tr.appendChild(th);
+          td = document.createElement("td");
+          tr.appendChild(td);
         }
-        th = document.createElement("th");
-        th.className = "pvtAxisLabel";
-        th.textContent = c;
-        tr.appendChild(th);
+        td = document.createElement("td");
+        td.className = "pvtAxisLabel";
+        td.textContent = c;
+        tr.appendChild(td);
         for (i in colKeys) {
           if (!hasProp.call(colKeys, i)) continue;
           colKey = colKeys[i];
           x = spanSize(colKeys, parseInt(i), parseInt(j));
           if (x !== -1) {
-            th = document.createElement("th");
-            th.className = "pvtColLabel";
-            th.textContent = colKey[j];
-            th.setAttribute("colspan", x);
+            td = document.createElement("td");
+            td.className = "pvtColLabel";
+            td.textContent = colKey[j];
+            td.setAttribute("colspan", x);
             if (parseInt(j) === colAttrs.length - 1 && rowAttrs.length !== 0) {
-              th.setAttribute("rowspan", 2);
+              td.setAttribute("rowspan", 2);
             }
-            tr.appendChild(th);
+            tr.appendChild(td);
           }
         }
       }
-      result.appendChild(thead);
-      tbody = document.createElement("tbody");
       for (i in rowKeys) {
         if (!hasProp.call(rowKeys, i)) continue;
         rowKey = rowKeys[i];

@@ -288,7 +288,7 @@ callWithJQuery ($) ->
                     addRecord(record) for record in input
             else if input instanceof jQuery
                 tblCols = []
-                $("thead > tr > th", input).each (i) -> tblCols.push $(this).text()
+                $("tbody > tr.pvtLabelRow > td", input).each (i) -> tblCols.push $(this).text()
                 $("tbody > tr", input).each (i) ->
                     record = {}
                     $("td", this).each (j) -> record[tblCols[j]] = $(this).text()
@@ -412,42 +412,50 @@ callWithJQuery ($) ->
                 len++
             return len
 
-        thead = document.createElement("thead")
+        tbody = document.createElement("tbody")
         #the first row is for the row attribute labels
         #first level col headers and total
         tr = document.createElement("tr")
         tr.className = "pvtLabelRow"
+
+        len = colAttrs.length
+        if len == 0
+            len = 1
         if rowAttrs.length !=0
             for own i, r of rowAttrs
-                th = document.createElement("th")
-                th.setAttribute("rowspan",colAttrs.length)
-                th.className = "pvtAxisLabel"
-                th.textContent = r
-                tr.appendChild th
+                td = document.createElement("td")
+                td.setAttribute("rowspan",len)
+                td.className = "pvtAxisLabel"
+                td.textContent = r
+                tr.appendChild td
         else
-          th = document.createElement("th")
-          th.setAttribute("rowspan",colAttrs.length)
-          tr.appendChild th
+          td = document.createElement("td")
+          td.setAttribute("rowspan",len)
+          tr.appendChild td
 
         for own j, c of colAttrs
             if parseInt(j) == 0
               for own i, colKey of colKeys
                 x = spanSize(colKeys, parseInt(i), parseInt(j))
                 if x != -1
-                    th = document.createElement("th")
-                    th.className = "pvtColLabel"
-                    th.textContent = colKey[j]
-                    th.setAttribute("colspan", x)
-                    tr.appendChild th
+                    td = document.createElement("td")
+                    td.className = "pvtColLabel"
+                    td.textContent = colKey[j]
+                    td.setAttribute("colspan", x)
+                    tr.appendChild td
 
+
+        len = colAttrs.length
+        if len == 0
+            len = 1
         if opts.showRowTotals == true
-            th = document.createElement("th")
-            th.setAttribute("rowspan",colAttrs.length)
-            th.className = "pvtTotalLabel"
-            th.innerHTML = opts.localeStrings.totals
-            tr.appendChild th
+            td = document.createElement("td")
+            td.setAttribute("rowspan",len)
+            td.className = "pvtTotalLabel"
+            td.innerHTML = opts.localeStrings.totals
+            tr.appendChild td
 
-        thead.appendChild tr
+        tbody.appendChild tr
 
         for own j, c of colAttrs
             if parseInt(j) != 0
@@ -456,38 +464,37 @@ callWithJQuery ($) ->
               for own i, colKey of colKeys
                 x = spanSize(colKeys, parseInt(i), parseInt(j))
                 if x != -1
-                    th = document.createElement("th")
-                    th.className = "pvtColLabel"
-                    th.textContent = colKey[j]
-                    th.setAttribute("colspan", x)
-                    tr.appendChild th
-              thead.appendChild tr
+                    td = document.createElement("td")
+                    td.className = "pvtColLabel"
+                    td.textContent = colKey[j]
+                    td.setAttribute("colspan", x)
+                    tr.appendChild td
+              tbody.appendChild tr
 
         for own j, c of colAttrs
             tr = document.createElement("tr")
             tr.className = "pvtLabelRow"
             if parseInt(j) == 0 and rowAttrs.length != 0
-                th = document.createElement("th")
-                tr.appendChild th
-            th = document.createElement("th")
-            th.className = "pvtAxisLabel"
-            th.textContent = c
-            tr.appendChild th
+                td = document.createElement("td")
+                tr.appendChild td
+            td = document.createElement("td")
+            td.className = "pvtAxisLabel"
+            td.textContent = c
+            tr.appendChild td
 
             for own i, colKey of colKeys
                 x = spanSize(colKeys, parseInt(i), parseInt(j))
                 if x != -1
-                    th = document.createElement("th")
-                    th.className = "pvtColLabel"
-                    th.textContent = colKey[j]
-                    th.setAttribute("colspan", x)
+                    td = document.createElement("td")
+                    td.className = "pvtColLabel"
+                    td.textContent = colKey[j]
+                    td.setAttribute("colspan", x)
                     if parseInt(j) == colAttrs.length-1 and rowAttrs.length != 0
-                        th.setAttribute("rowspan", 2)
-                    tr.appendChild th
+                        td.setAttribute("rowspan", 2)
+                    tr.appendChild td
 
-        result.appendChild thead
 
-        tbody = document.createElement("tbody")
+
         #now the actual data rows, with their row headers and totals
         for own i, rowKey of rowKeys
             tr = document.createElement("tr")
